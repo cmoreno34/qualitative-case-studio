@@ -1,8 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Qualitative case studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,8 +69,6 @@ textarea:focus{outline:none;border-color:var(--c,var(--leaf))}
 }
 </style>
 
-</head>
-<body>
 <div class="wrap">
 <header>
   <div>
@@ -116,7 +109,10 @@ textarea:focus{outline:none;border-color:var(--c,var(--leaf))}
     <a class="t2" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT<span>code & summarise</span></a>
     <a class="t2" href="https://claude.ai" target="_blank" rel="noopener">Claude<span>long transcripts</span></a>
   </div>
-  <button class="copybtn" id="copyprompt">copy the thematic-analysis prompt</button>
+  <label class="fl" for="w_raw">Paste your raw material — interviews, reviews, observation notes</label>
+  <textarea id="w_raw" style="min-height:90px" placeholder="Paste the quotes / notes you gathered. Many files? Upload them in NotebookLM or ChatGPT instead, and paste this prompt there."></textarea>
+  <p class="lead" style="margin:9px 0 10px">The prompt below <b>already includes your material</b> — copy it and it's ready to paste into any AI. It also asks the AI to <b>draw the thematic map</b> (a mindmap: case → themes → categories → quotes).</p>
+  <button class="copybtn" id="copyprompt">copy the thematic-analysis prompt (with your material)</button>
   <pre class="prompt" id="prompt"></pre>
   <label class="fl" for="w_find">② Your themes (3-5) + a verbatim quote for each</label>
   <textarea id="w_find" placeholder="Theme 1 — … “quote”. Theme 2 — … “quote”. (Hand-code ~20 items first, then check the AI's themes against real quotes.)"></textarea>
@@ -183,24 +179,34 @@ function chosenTechs(){return [...techsEl.children].filter(b=>b.getAttribute('ar
 // thematic-analysis prompt (auto-fills case + chosen techniques)
 function buildPrompt(){
   const c=CASES[current];const tch=chosenTechs().join(', ')||'[your chosen techniques]';
+  const raw=(document.getElementById('w_raw')||{}).value||'';
+  const material=raw.trim()?raw.trim():'[PASTE YOUR RAW MATERIAL HERE — interviews, reviews, observation notes]';
   return `Act as a qualitative research analyst. Case: ${c.name} — ${c.problem}
 I gathered material using: ${tch}.
-Here is my raw material (paste your interview notes / reviews / observations below this line):
-[PASTE YOUR RAW MATERIAL HERE]
 
-Do a thematic analysis: (1) open codes in the customer's own words, (2) group into categories, (3) name 3-5 THEMES, each with 2 verbatim quotes. For every theme give the non-obvious INSIGHT and its implication for ${c.name}. Use ONLY my material — do not invent quotes; if evidence is thin, say so. End with the single decision the evidence most supports.`;
+RAW MATERIAL:
+"""
+${material}
+"""
+
+Analyse the material above:
+1) Open codes in the customer's OWN words. 2) Group into categories. 3) Name 3-5 THEMES, each with 2 verbatim quotes.
+4) For each theme give the non-obvious INSIGHT and its implication for ${c.name}.
+5) DRAW A THEMATIC MAP as a Mermaid mindmap inside a \`\`\`mermaid code block (type "mindmap"): the case at the centre, then themes, then categories, then a sample code/quote under each.
+6) End with the single DECISION the evidence most supports, and the biggest gap still unknown.
+Use ONLY my material — never invent quotes or data; if the evidence is thin, say so.`;
 }
 function refreshPrompt(){document.getElementById('prompt').textContent=buildPrompt();}
 
 // persistence
-const ids=['w_name','w_date','w_tech','w_find','w_ins','w_dec'];
+const ids=['w_name','w_date','w_tech','w_raw','w_find','w_ins','w_dec'];
 let st;
 function save(){clearTimeout(st);st=setTimeout(()=>{const o={_case:current,_techs:chosenTechs()};ids.forEach(i=>o[i]=val(i));
   try{localStorage.setItem(KEY,JSON.stringify(o));document.getElementById('saved').textContent='Saved ✓ '+new Date().toLocaleTimeString();}catch(_){}} ,300);}
 (function init(){let s={};try{s=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(_){}
   if(s._case&&CASES[s._case])current=s._case;
   ids.forEach(i=>{const el=document.getElementById(i);if(!el)return;el.value=s[i]||'';
-    el.addEventListener('input',()=>{if(el.tagName==='TEXTAREA'){autogrow(el);}save();if(i==='w_tech')refreshPrompt();});
+    el.addEventListener('input',()=>{if(el.tagName==='TEXTAREA'){autogrow(el);}save();if(i==='w_tech'||i==='w_raw')refreshPrompt();});
     if(el.tagName==='TEXTAREA')autogrow(el);});
   if(s._techs)[...techsEl.children].forEach(b=>{if(s._techs.includes(b.textContent))b.setAttribute('aria-pressed','true');});
   syncPick();renderCase();refreshPrompt();
@@ -213,6 +219,3 @@ document.getElementById('pdf').onclick=()=>{if(!val('w_date'))document.getElemen
 document.getElementById('newcase').onclick=()=>{if(confirm('Clear the worksheet? Download your PDF first if you need it.')){localStorage.removeItem(KEY);location.reload();}};
 const root=document.documentElement;document.getElementById('theme').onclick=()=>{const c=root.getAttribute('data-theme');root.setAttribute('data-theme',c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));};
 </script>
-
-</body>
-</html>
