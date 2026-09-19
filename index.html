@@ -177,7 +177,7 @@ function renderCase(){const c=CASES[current];
 // techniques
 const techsEl=document.getElementById('techs');
 TECHS.forEach(t=>{const b=document.createElement('button');b.className='tech';b.type='button';b.textContent=t;b.setAttribute('aria-pressed','false');
-  b.onclick=()=>{b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');save();};techsEl.appendChild(b);});
+  b.onclick=()=>{b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');refreshPrompt();save();};techsEl.appendChild(b);});
 function chosenTechs(){return [...techsEl.children].filter(b=>b.getAttribute('aria-pressed')==='true').map(b=>b.textContent);}
 
 // thematic-analysis prompt (auto-fills case + chosen techniques)
