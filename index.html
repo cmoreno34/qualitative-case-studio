@@ -109,8 +109,9 @@ textarea:focus{outline:none;border-color:var(--c,var(--leaf))}
     <a class="t2" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT<span>code & summarise</span></a>
     <a class="t2" href="https://claude.ai" target="_blank" rel="noopener">Claude<span>long transcripts</span></a>
   </div>
-  <label class="fl" for="w_raw">Paste your raw material — interviews, reviews, observation notes</label>
-  <textarea id="w_raw" style="min-height:90px" placeholder="Paste the quotes / notes you gathered. Many files? Upload them in NotebookLM or ChatGPT instead, and paste this prompt there."></textarea>
+  <div class="case" id="gatherHint" style="margin:2px 0 10px;font-size:13px"></div>
+  <label class="fl" for="w_raw">Paste your raw material — real quotes, reviews, observation notes (not summaries)</label>
+  <textarea id="w_raw" style="min-height:90px" placeholder="Paste the actual words people used — one quote or note per line. e.g.  “I left because the fitting-room line was 20 min” · review: “sizes run tiny, had to return” · observation: 3 of 5 shoppers checked the app for stock. Many files? Upload them in NotebookLM or ChatGPT and paste this prompt there."></textarea>
   <p class="lead" style="margin:9px 0 10px">The prompt below <b>already includes your material</b> — copy it and it's ready to paste into any AI. It also asks the AI to <b>draw the thematic map</b> (a mindmap: case → themes → categories → quotes).</p>
   <button class="copybtn" id="copyprompt">copy the thematic-analysis prompt (with your material)</button>
   <pre class="prompt" id="prompt"></pre>
@@ -146,13 +147,16 @@ textarea:focus{outline:none;border-color:var(--c,var(--leaf))}
 const CASES={
  zara:{name:"Zara 🛍️",tag:"in-store experience",
    problem:"In-store dwell time is falling and online returns are rising. Use qualitative research to find out WHY, and propose decisions to improve the shopping experience.",
-   task:"Why is time in store dropping? What frustrates shoppers between store and online?"},
+   task:"Why is time in store dropping? What frustrates shoppers between store and online?",
+   gather:"Look for what shoppers SAY and DO about the store-to-online journey: store-visit notes (the rail, the fitting-room queue, checkout), TikTok/Instagram Zara hauls + their comments, App Store & Google reviews, and Reddit threads on sizing and returns. Aim for ~15–25 real quotes/notes."},
  starbucks:{name:"Starbucks ☕",tag:"customer experience",
    problem:"Some customers have cut how often they visit, or choose other cafés to work or study. Use qualitative research to understand why, and propose decisions to win them back.",
-   task:"What makes the space work — or not — for a long, comfortable stay?"},
+   task:"What makes the space work — or not — for a long, comfortable stay?",
+   gather:"Look for how people USE the space and why they switch: on-site observation (laptops, meetings, how long they stay, plugs/wifi/seats), Google & TripAdvisor reviews, and Reddit/forum posts about working or studying in cafés. Aim for ~15–25 real quotes/notes."},
  netflix:{name:"Netflix 🎬",tag:"why users abandon series",
    problem:"Many users start series but don't finish them. Use qualitative research to understand the motivations and barriers, and propose decisions to reduce abandonment and raise engagement.",
-   task:"Why do people drop a series? Where does the experience lose them?"}
+   task:"Why do people drop a series? Where does the experience lose them?",
+   gather:"Look for the WORDS people use when they quit a series: App Store/Play reviews mentioning “cancelled” or “gave up”, Reddit threads like “shows I never finished”, comments under trailers, and your own viewing diary of a series you dropped (where, and why, you stopped). Aim for ~15–25 real quotes/notes."}
 };
 const TECHS=["In-depth interviews","Focus group","In-store / contextual observation","Netnography (reviews, Reddit, social)","Projective techniques","Usage diaries"];
 const RIGOUR=["Saturation reached","Triangulated (2+ methods/sources)","Purposive sample","Member check","Looked for disconfirming cases"];
@@ -171,7 +175,8 @@ Object.entries(CASES).forEach(([k,c])=>{
 });
 function syncPick(){[...pick.children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===current));}
 function renderCase(){const c=CASES[current];
-  document.getElementById('casebox').innerHTML=`<b>Case — ${c.name}.</b> ${c.problem} <b>Your task:</b> ${c.task}`;}
+  document.getElementById('casebox').innerHTML=`<b>Case — ${c.name}.</b> ${c.problem}<br><b>Your task:</b> ${c.task}<br><span style="display:block;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)"><b>🔎 What to gather:</b> ${c.gather}</span>`;refreshGather&&refreshGather();}
+function refreshGather(){const c=CASES[current];const g=document.getElementById('gatherHint');if(g)g.innerHTML=`<b>For ${c.name}:</b> ${c.gather}`;}
 
 // techniques
 const techsEl=document.getElementById('techs');
