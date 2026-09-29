@@ -104,15 +104,15 @@ textarea:focus{outline:none;border-color:var(--c,var(--leaf))}
   <h2><span class="n">2</span> Gather &amp; analyse — opinions → themes</h2>
   <p class="lead">Collect real material (reviews, interviews, social) and code it: quotes → codes → categories → <b>themes</b>. Use the tools; the AI helps you code, but you judge.</p>
   <div class="tools2">
-    <a class="t2 main" href="https://chatgpt.com/g/g-MBeK0q8uJ-qualitative-research" target="_blank" rel="noopener">Qualitative GPT<span>the course assistant</span></a>
-    <a class="t2" href="https://notebooklm.google.com" target="_blank" rel="noopener">NotebookLM<span>grounded on your files</span></a>
-    <a class="t2" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT<span>code & summarise</span></a>
-    <a class="t2" href="https://claude.ai" target="_blank" rel="noopener">Claude<span>long transcripts</span></a>
+    <a class="t2 main" href="https://claude.ai/new" target="_blank" rel="noopener">Claude<span>draws the map reliably</span></a>
+    <a class="t2" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT<span>chatgpt.com</span></a>
+    <a class="t2" href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini<span>gemini.google.com</span></a>
   </div>
   <div class="case" id="gatherHint" style="margin:2px 0 10px;font-size:13px"></div>
   <label class="fl" for="w_raw">Paste your raw material — real quotes, reviews, observation notes (not summaries)</label>
-  <textarea id="w_raw" style="min-height:90px" placeholder="Paste the actual words people used — one quote or note per line. e.g.  “I left because the fitting-room line was 20 min” · review: “sizes run tiny, had to return” · observation: 3 of 5 shoppers checked the app for stock. Many files? Upload them in NotebookLM or ChatGPT and paste this prompt there."></textarea>
+  <textarea id="w_raw" style="min-height:90px" placeholder="Paste the actual words people used — one quote or note per line. e.g.  “I left because the fitting-room line was 20 min” · review: “sizes run tiny, had to return” · observation: 3 of 5 shoppers checked the app for stock. Many files? Upload them in Claude, ChatGPT or Gemini and paste this prompt there."></textarea>
   <p class="lead" style="margin:9px 0 10px">The prompt below <b>already includes your material</b> — copy it and it's ready to paste into any AI. It also asks the AI to <b>draw the thematic map</b> (a mindmap: case → themes → categories → quotes).</p>
+  <p class="hint" style="color:var(--soft);margin:0 0 8px">Paste the prompt into a <b>new chat</b>. The answer <b>must include a <code>```mermaid</code> code block</b> — that is the map. ChatGPT and Gemini sometimes skip it: if it's missing, reply <b>“You did not include the map step. Output the thematic map now as a ```mermaid mindmap code block.”</b></p>
   <button class="copybtn" id="copyprompt">copy the thematic-analysis prompt (with your material)</button>
   <pre class="prompt" id="prompt"></pre>
   <p class="lead" style="margin:9px 0 6px"><b>Rigour check</b> — qualitative work is judged by <b>trustworthiness</b>, not sample size. Tick what your analysis can honestly claim; the prompt asks the AI to test these too.</p>
@@ -204,13 +204,30 @@ RAW MATERIAL:
 ${material}
 """
 
-Analyse the material above:
+Analyse the material above. Do ALL 7 steps, in order. Step 5 (the map) is MANDATORY — an answer without it is incomplete and will be rejected.
 1) Open codes in the customer's OWN words. 2) Group into categories. 3) Name 3-5 THEMES, each with 2 verbatim quotes.
 4) For each theme give the non-obvious INSIGHT and its implication for ${c.name}.
-5) DRAW A THEMATIC MAP as a Mermaid mindmap inside a \`\`\`mermaid code block (type "mindmap"): the case at the centre, then themes, then categories, then a sample code/quote under each.
+5) THEMATIC MAP — REQUIRED. Write it yourself as Mermaid code inside a fenced code block that starts with \`\`\`mermaid and ends with \`\`\`. Do NOT describe the map in words instead, do NOT say you cannot draw or render images, do NOT generate an image or use a canvas or any other tool, do NOT skip or postpone it and do NOT ask me whether I want it — just write the code as plain text. Use the "mindmap" type:
+   - first line: mindmap
+   - second line: the root (the case), written as  root((Name))
+   - then themes, then categories, then ONE short sample quote per category — one node per line, nested ONLY by indentation (2 spaces per level)
+   - node text: plain words only — NO quotation marks, parentheses, brackets, braces, colons or emojis inside node text (they break the diagram)
+   Example of the exact format:
+\`\`\`mermaid
+mindmap
+  root((Case name))
+    Waiting
+      Fitting room queue
+        I left because the line was 20 min
+    Fit
+      Sizes run small
+        Had to return it twice
+\`\`\`
 6) RIGOUR / TRUSTWORTHINESS. ${rig} Judge my analysis on it: does the material look near SATURATION (new material stops adding themes)? Would TRIANGULATION (a second method or source) strengthen any theme? Flag any theme resting on a single voice, and note which findings would survive a member check.
 7) End with the single DECISION the evidence most supports, and the biggest gap still unknown.
-Use ONLY my material — never invent quotes or data; if the evidence is thin, say so.`;
+Use ONLY my material — never invent quotes or data; if the evidence is thin, say so.
+
+FINAL CHECK before you answer: does your reply contain the \`\`\`mermaid code block from the map step? If not, add it.`;
 }
 function refreshPrompt(){document.getElementById('prompt').textContent=buildPrompt();}
 
